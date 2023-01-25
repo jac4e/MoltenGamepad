@@ -13,14 +13,32 @@ device_methods gcadapter_device::methods;
 //static array of event declarations, loaded by gcadapter_manager init_profile();
 //{"name","description",type,"default mapping"}
 const event_decl gcadapter_events[] = {
-  {"B","B Button",BTN,"B"},
-  {"Y","Y Button",BTN,"Y"},
-  {"X","X Button",BTN,"X"},
-  {"A","A Button",BTN,"A"},
+  {"a", "a", BTN, "a"},
+  {"b", "b", BTN, "b"},
+  {"x", "x", BTN, "x"},
+  {"y", "y", BTN, "y"},
+  {"z", "z", BTN, "z"},
+  {"start", "start", BTN, "start"},
+  {"lt_abs", "lt_abs", ABS, "lt_abs"},
+  {"rt_abs", "rt_abs", ABS, "rt_abs"},
+  {"lt_btn", "lt_btn", BTN, "lt_btn"},
+  {"rt_btn", "rt_btn", BTN, "rt_btn"},
+  {"control_x", "control_x", ABS, "control_x"},
+  {"control_y", "control_y", ABS, "control_y"},
+  {"c_x", "c_x", ABS, "c_x"},
+  {"c_y", "c_y", ABS, "c_y"},
+  {"d_up_btn", "d_up_btn", BTN, "d_up_btn"},
+  {"d_down_btn", "d_down_btn", BTN, "d_down_btn"},
+  {"d_left_btn", "d_left_btn", BTN, "d_left_btn"},
+  {"d_right_btn", "d_right_btn", BTN, "d_right_btn"},
+  {"d_up_hat", "d_up_hat", BTN, "d_up_hat"},
+  {"d_down_hat", "d_down_hat", BTN, "d_down_hat"},
+  {"d_left_hat", "d_left_hat", BTN, "d_left_hat"},
+  {"d_right_hat", "d_right_hat", BTN, "d_right_hat"},
   {nullptr, nullptr, NO_ENTRY, nullptr}
 };
 
-gcadapter_device::gcadapter_device(int fdin) {
+gcadapter_device::gcadapter_device(int fdin, std::string jsnumin): jsnum(jsnumin) {
   fd = fdin;
   
   gcadapter_dev.name_stem = name_stem;
@@ -45,20 +63,28 @@ int gcadapter_device::init(input_source* ref) {
   return 0;
 }
 
+// Process js_event and pass on to moltengamepad
 void gcadapter_device::process(void* tag) {
-  //read the file identified by the tag
-  //and compute values to be sent for translation.
+
   struct js_event event;
+  int64_t value;
   int res = read(fd, &event, sizeof(event));
-  printf("%d\t%d\t%d\n", event.type, event.value, event.number);
-
-  // methods.send_value(ref,event.number,0);
-
-  //ev_id is a 0-index of the events, in the order they were registered.
-  //For this gcadapter, event "up" has an id of 4.
-  //So if reading this file indicated the "up" button was pressed:
-  //  methods.send_value(ref,4,1);
+  printf("GC%s:\t%s\t%d\n", gcadapter_events[event.number].name, event.value);
   
+  switch (event.type)
+  {
+  case JS_EVENT_BUTTON:
+    // Button is either 1 or 0, no range issues here.
+    value = event.value;
+    break;
+  case JS_EVENT_AXIS:
+    // process axis so it fits within ABS_RANGE
+    // for now, do +/- ABS_RANGE until proper range conversion is sorted
+    value = event.value > 0 ? ABS_RANGE : -ABS_RANGE;
+    break;
+  }
+
+  methods.send_value(ref,event.number,);
 
   //send a SYN_REPORT as appropriate. Without it, events may be ignored while
   //software waits for the SYN_REPORT.

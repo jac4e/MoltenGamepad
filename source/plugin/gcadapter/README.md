@@ -6,6 +6,11 @@ This plugin uses the linux joystick library to read the inputs of individual con
 
 Currently it strictly targets devices with [Vendor ID 0079](https://devicehunt.com/view/type/usb/vendor/0079), which is more or less the Mayflash USB GameCube Controller Adapters.
 
+## Useful Documentation
+
+- [Linux Joystick](https://www.kernel.org/doc/html/latest/input/joydev/index.html?highlight=joystick)
+- [Force Feedback (Rumble)](https://www.kernel.org/doc/html/latest/input/ff.html)
+
 ## Useful Commands
 
 View udev information of a controller:

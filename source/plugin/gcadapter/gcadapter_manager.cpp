@@ -55,7 +55,7 @@ void gcadapter_manager::init_profile() {
     methods.register_event(ref, *ev);
   }
   //register device-level options
-  methods.register_dev_option(ref,{"foo","simple test option","false",MG_BOOL});
+  // methods.register_dev_option(ref,{"foo","simple test option","false",MG_BOOL});
 
   //create a convenience function...
   auto set_alias = [&] (const char* external, const char* internal) {
@@ -63,10 +63,10 @@ void gcadapter_manager::init_profile() {
   };
 
   //Init some aliases...
-  set_alias("first","one");
-  set_alias("second","two");
-  set_alias("third","three");
-  set_alias("fourth","four");
+  // set_alias("first","one");
+  // set_alias("second","two");
+  // set_alias("third","three");
+  // set_alias("fourth","four");
   //... as needed.
 
   //Now when the user sets gamepad.third, it will
@@ -88,26 +88,24 @@ int gcadapter_manager::accept_device(struct udev* udev, struct udev_device* dev)
   const char* product = udev_device_get_sysattr_value(dev, "id/product");
 
   if (!vendor || strcmp(vendor,"0079") != 0 ) {
-    // printf("^DEVICE UNCLAIMED\n");
     return DEVICE_UNCLAIMED;
   }
 
-  if (!sysnum ) {
-    // printf("^DEVICE UNCLAIMED\n");
+  if (!sysnum) {
     return DEVICE_UNCLAIMED;
   }
 
   // Get file descriptor
   std::string sysnum_s = sysnum;
-  char back = sysnum_s.back();
+  char jsnum = sysnum_s.back();
 
   char path [20];
-  int cx = snprintf(path, 20, "/dev/%s/js%c", subsystem, back);
+  int cx = snprintf(path, 20, "/dev/%s/js%c", subsystem, jsnum);
   int fd = open(path, O_RDWR | O_NONBLOCK);
   if (fd < 0)
     return DEVICE_UNCLAIMED;
 
-  gcadapter_device * gcdev = new gcadapter_device(fd);
+  gcadapter_device * gcdev = new gcadapter_device(fd, jsnum);
   device_plugin implementation = gcadapter_dev;
   methods.add_device(ref, implementation, gcdev);
   return DEVICE_CLAIMED;
