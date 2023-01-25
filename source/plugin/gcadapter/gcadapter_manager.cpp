@@ -105,7 +105,7 @@ int gcadapter_manager::accept_device(struct udev* udev, struct udev_device* dev)
   if (fd < 0)
     return DEVICE_UNCLAIMED;
 
-  gcadapter_device * gcdev = new gcadapter_device(fd, jsnum);
+  gcadapter_device * gcdev = new gcadapter_device(fd, path);
   device_plugin implementation = gcadapter_dev;
   methods.add_device(ref, implementation, gcdev);
   return DEVICE_CLAIMED;

@@ -44,13 +44,13 @@ enum gcadapter_event_id {
 
 class gcadapter_device {
 public:
-  gcadapter_device(int fd, std::string jsnum);
+  gcadapter_device(int fd, char * path);
   ~gcadapter_device();
   int init(input_source* ref);
 
   input_source* ref;
   int fd;
-  std::string jsnum;
+  std::string devnode;
   //let our init func call private methods by marking it as a friend.
   friend PLUGIN_INIT_FUNC(gcadapter)(plugin_api api);
   static device_methods methods;

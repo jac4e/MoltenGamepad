@@ -39,7 +39,7 @@ const event_decl gcadapter_events[] = {
   {nullptr, nullptr, NO_ENTRY, nullptr}
 };
 
-gcadapter_device::gcadapter_device(int fdin, std::string jsnumin): jsnum(jsnumin) {
+gcadapter_device::gcadapter_device(int fdin, char * path): devnode(path) {
   fd = fdin;
   
   gcadapter_dev.name_stem = name_stem;
@@ -70,7 +70,8 @@ void gcadapter_device::process(void* tag) {
   struct js_event event;
   int64_t value;
   int res = read(fd, &event, sizeof(event));
-  printf("GC%s:\t%s\t%d\n", gcadapter_events[event.number].name, event.value);
+  char back = devnode.back();
+  printf("GC%c:\t%s\t%d\n", back, gcadapter_events[event.number].name, event.value);
   
   switch (event.type)
   {
@@ -85,7 +86,7 @@ void gcadapter_device::process(void* tag) {
     break;
   }
 
-  methods.send_value(ref,event.number,);
+  methods.send_value(ref,event.number,value);
 
   //send a SYN_REPORT as appropriate. Without it, events may be ignored while
   //software waits for the SYN_REPORT.
@@ -122,7 +123,7 @@ int gcadapter_device::play_ff(int id, int repeats){
   memset(&ev, 0, sizeof(ev));
   ev.type = EV_FF;
   ev.code = id;
-  ev.value = repetitions;
+  ev.value = repeats;
   ssize_t res = write(fd, &ev, sizeof(ev));
   if (res < 0)
     perror("gcadapter write FF event");

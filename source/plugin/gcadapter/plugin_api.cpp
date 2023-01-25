@@ -72,10 +72,13 @@ PLUGIN_INIT(gcadapter)(plugin_api api) {
   };
   gcadapter_dev.upload_ff = [] (void* data, ff_effect* effect) {
     return ((gcadapter_device*)data)->upload_ff(effect);
+  };
   gcadapter_dev.erase_ff = [] (void* data, int id) {
     return ((gcadapter_device*)data)->erase_ff(id);
+  };
   gcadapter_dev.play_ff = [] (void* data, int id, int repetitions) {
     return ((gcadapter_device*)data)->play_ff(id, repetitions);
+  };
 
   api.mg.add_manager(gcadapter_man,  manager);
   return 0;
