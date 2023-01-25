@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <cstring>
 #include <linux/joystick.h>
+#include <linux/input.h>
 
 //a little brevity...
 #define BTN DEV_KEY
@@ -94,4 +95,36 @@ void gcadapter_device::process(void* tag) {
 int gcadapter_device::process_option(const char* opname, const MGField value) {
   //an option was changed! Use the name and value to do what needs to be done.
   return 0; //should be possible in the future to signal an error...
+}
+
+int gcadapter_device::upload_ff(ff_effect* effect) {
+  if (fd < 0)
+    return -1;
+  int ret = ioctl(fd, EVIOCSFF, effect);
+  if (ret < 0)
+    perror("gcadapter upload FF");
+  return effect->id;
+}
+
+int gcadapter_device::erase_ff(int id) {
+  if (fd < 0)
+    return -1;
+  int ret = ioctl(fd, EVIOCRMFF, id);
+  if (ret < 0)
+    perror("gcadapter erase FF");
+  return 0;
+}
+
+int gcadapter_device::play_ff(int id, int repeats){
+  if (fd < 0)
+    return -1;
+  input_event ev;
+  memset(&ev, 0, sizeof(ev));
+  ev.type = EV_FF;
+  ev.code = id;
+  ev.value = repetitions;
+  ssize_t res = write(fd, &ev, sizeof(ev));
+  if (res < 0)
+    perror("gcadapter write FF event");
+  return 0;
 }

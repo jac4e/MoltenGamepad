@@ -56,6 +56,11 @@ public:
   static device_methods methods;
 
   constexpr static const char* name_stem = "GC";
+
+  int upload_ff(ff_effect* effect);
+  int erase_ff(int id);
+  int play_ff(int id, int repeats);
+
 protected:
   void process(void*);
   int process_option(const char* opname, const MGField value);

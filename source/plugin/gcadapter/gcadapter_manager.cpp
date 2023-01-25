@@ -73,7 +73,7 @@ void gcadapter_manager::init_profile() {
   //resolve to updating the event "three" exposed on these devices.
 
   //Register some driver-level options.
-  methods.register_manager_option(ref, {"test_option","a simple option to demonstrate plugin features","false",MG_BOOL});
+  // methods.register_manager_option(ref, {"test_option","a simple option to demonstrate plugin features","false",MG_BOOL});
 };
 
 int gcadapter_manager::accept_device(struct udev* udev, struct udev_device* dev) {
